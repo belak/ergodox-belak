@@ -7,7 +7,7 @@ based on the keycaps I have.
 ## Instructions
 
 1. Clone the main qmk repo
-2. Clone this to $QMK/keyboards/ergodox/layouts/belak
+2. Clone this to $QMK/keyboards/ergodox/keymaps/belak
 3. Run `make ergodox-belak-teensy
 
 ## Changelog
