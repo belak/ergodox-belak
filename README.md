@@ -1,4 +1,4 @@
-# README
+# Belak's Ergodox Layout
 
 This has been based off of emacs\_osx\_dk from the main qmk repo. However, I've
 taken some of the ideas for the thumbs from dvorak\_emacs and tweaked it a bit
