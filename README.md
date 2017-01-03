@@ -1,14 +1,15 @@
 # Belak's Ergodox Layout
 
-This has been based off of emacs\_osx\_dk from the main qmk repo. However, I've
-taken some of the ideas for the thumbs from dvorak\_emacs and tweaked it a bit
-based on the keycaps I have.
+This has been based off of [emacs\_osx\_dk](https://github.com/jackhumbert/qmk_firmware/tree/master/keyboards/ergodox/keymaps/emacs_osx_dk)
+from the main qmk repo. However, I've taken some of the ideas for the thumbs
+from [dvorak\_emacs](https://github.com/jackhumbert/qmk_firmware/tree/master/keyboards/ergodox/keymaps/dvorak_emacs)
+and tweaked it a bit based on the keycaps I have.
 
 ## Instructions
 
 1. Clone the main qmk repo
-2. Clone this to $QMK/keyboards/ergodox/keymaps/belak
-3. Run `make ergodox-belak-teensy
+2. Clone this to `$QMK/keyboards/ergodox/keymaps/belak`
+3. Run `make ergodox-belak-teensy`
 
 ## Changelog
 
