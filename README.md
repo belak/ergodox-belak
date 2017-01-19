@@ -13,6 +13,10 @@ and tweaked it a bit based on the keycaps I have.
 
 ## Changelog
 
+First Revision
+
+* Reverse grave and escape
+
 Initial Version
 
 * Copy from emacs\_osx\_dk
