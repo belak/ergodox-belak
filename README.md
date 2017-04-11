@@ -13,6 +13,12 @@ and tweaked it a bit based on the keycaps I have.
 
 ## Changelog
 
+Second Revision
+
+* Clean up definitions to make differences between layers easier to see
+* Remove old LCD code
+* Add new LCD code based on fredizzimo's branch
+
 First Revision
 
 * Reverse grave and escape
