@@ -13,6 +13,17 @@ and tweaked it a bit based on the keycaps I have.
 
 ## Changelog
 
+Third Revision
+
+* Add numpad layer and remove numpad from symbols layer
+* Disable media layer
+* Add arrow keys on ijkl to the symbols layer
+* Replace ALT on held enter and held delete with GUI (for better OSX
+  compatibility, as there's already an ALT key relatively close)
+* Replace keys above enter and delete with temporary layer switch buttons not
+  matching the other layer switch for that hand.
+* Reindent and space out most of the layer definitions
+
 Second Revision
 
 * Clean up definitions to make differences between layers easier to see
