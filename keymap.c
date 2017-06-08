@@ -2,6 +2,8 @@
 #include "debug.h"
 #include "action_layer.h"
 
+#define LAYER_ON(pos) ((layer_state) & (1<<(pos)))
+
 #define _______ KC_TRNS
 
 #define BASE 0 // default layer
@@ -175,9 +177,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 };
 
-const uint16_t PROGMEM fn_actions[] = {
-    [1] = ACTION_LAYER_TAP_TOGGLE(SYMB)                // FN1 - Momentary Layer 1 (Symbols)
-};
+const uint16_t PROGMEM fn_actions[] = {};
 
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
@@ -201,24 +201,18 @@ void matrix_init_user(void) {
 
 // Runs constantly in the background, in a loop.
 void matrix_scan_user(void) {
-    uint8_t layer = biton32(layer_state);
-
     ergodox_board_led_off();
     ergodox_right_led_1_off();
     ergodox_right_led_2_off();
     ergodox_right_led_3_off();
-    switch (layer) {
-        case 0:
-            break;
-        case 1:
-            ergodox_right_led_1_on();
-            break;
-        case 2:
-            ergodox_right_led_2_on();
-            break;
-        default:
-            // none
-            break;
-    }
 
+    // Layer 1 and 2 are both overlay layers, so they could both be on. This
+    // means we can't use the lazy check of checking for the first significant
+    // bit.
+    if (LAYER_ON(1)) {
+        ergodox_right_led_1_on();
+    }
+    if (LAYER_ON(2)) {
+        ergodox_right_led_2_on();
+    }
 };
