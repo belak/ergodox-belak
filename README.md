@@ -13,6 +13,13 @@ and tweaked it a bit based on the keycaps I have.
 
 ## Changelog
 
+Fourth Revision
+
+* Remove media layer
+* Add a layer which swaps control and gui on the thumb keys.
+* Add some basic code to save settings to the eeprom
+* Save the state of the keys swapped in the thumb in the eeprom
+
 Third Revision
 
 * Add numpad layer and remove numpad from symbols layer

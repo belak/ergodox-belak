@@ -1,15 +1,32 @@
 #include "ergodox.h"
 #include "debug.h"
 #include "action_layer.h"
+#include "eeconfig.h"
 
 #define LAYER_ON(pos) ((layer_state) & (1<<(pos)))
 
 #define _______ KC_TRNS
 
-#define BASE 0 // default layer
-#define SYMB 1 // symbols
-#define NUMP 2 // numpad
-#define MDIA 3 // media keys (disabled)
+#define EECONFIG_BELAK_MAGIC (uint16_t)0xBE42
+
+// NOTE: This is just a number that's a bit beyond the end of what's already
+// defined. As there is no other define we can base this on, it may need to be
+// changed in the future. The initial value here is used as a placeholder with a
+// magic word, similar to the normal eeconfig.
+#define EECONFIG_BELAK               (uint16_t *)32
+
+// It's worth noting that I'm really lazy. The correct way to do this would be
+// how the normal eeconfig handles it and use a bitfield. However, the eeprom
+// has a ton of space which isn't being used so I don't really care and have a
+// separate byte for every setting.
+#define EECONFIG_BELAK_SWAP_GUI_CTRL (uint8_t *)34
+
+static uint8_t swap_gui_ctrl = 0;
+
+#define BASE 0  // default layer
+#define SYMB 1  // symbols
+#define NUMP 2  // numpad
+#define SWPH 31 // swap gui/ctrl on the hands
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Keymap 0: Basic layer
@@ -64,7 +81,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
  * |        |   %  |   ^  |   [  |   ]  |   ~  |      |           |      |   &  |      |      |      |      |        |
  * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   |      |      |      |      |      |                                       |      |      |      |      |      |
+ *   |      |      |      |      |      |                                       |      |      |      |      | TOGL |
  *   `----------------------------------'                                       `----------------------------------'
  *                                        ,-------------.       ,-------------.
  *                                        |      |      |       |      |      |
@@ -89,7 +106,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        _______, KC_UP,   _______, KC_UP,   _______, _______, KC_F12,
                 KC_DOWN, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
        _______, KC_AMPR, _______, _______, _______, _______, _______,
-                         _______, _______, _______, _______, _______,
+                         _______, _______, _______, _______, F(0),
        _______, _______,
        _______,
        _______, _______, _______
@@ -135,52 +152,53 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        _______,
        _______, _______, _______
 ),
-/* Keymap 2: Media and mouse keys (Not currently available)
- *
- * ,--------------------------------------------------.           ,--------------------------------------------------.
- * |        |      |      |      |      |      |      |           |      |      |      |      |      |      |        |
- * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
- * |        |      |      | MsUp |      |      |      |           |      |      |      |      |      |      |        |
- * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
- * |        |      |MsLeft|MsDown|MsRght|      |------|           |------|      |      |      |      |      |  Play  |
- * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
- * |        |      |      |      |      |      |      |           |      |      |      | Prev | Next |      |        |
- * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   |      |      |      | Lclk | Rclk |                                       | Mute |VolUp |VolDn |      |      |
- *   `----------------------------------'                                       `----------------------------------'
- *                                        ,-------------.       ,-------------.
- *                                        |      |      |       |      |      |
- *                                 ,------|------|------|       |------+------+------.
- *                                 |      |      |      |       |      |Brwser|Brwser|
- *                                 |      |      |------|       |------|Back  |Forwd |
- *                                 |      |      |      |       |      |      |      |
- *                                 `--------------------'       `--------------------'
+/* Keymap 31: Swap control and gui on the thumb
  */
-[MDIA] = KEYMAP(
+[SWPH] = KEYMAP(  // layer 0 : default
+        // left hand
        _______, _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, KC_MS_U, _______, _______, _______,
-       _______, _______, KC_MS_L, KC_MS_D, KC_MS_R, _______,
        _______, _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, KC_BTN1, KC_BTN2,
-                                           _______, _______,
-                                                    _______,
-                                  _______, _______, _______,
-    // right hand
-       _______,  _______, _______, _______, _______, _______, _______,
-       _______,  _______, _______, _______, _______, _______, _______,
-                 _______, _______, _______, _______, _______, KC_MPLY,
-       _______,  _______, _______, KC_MPRV, KC_MNXT, _______, _______,
-                          KC_MUTE, KC_VOLU, KC_VOLD, _______, _______,
+       _______, _______, _______, _______, _______, _______,
+       _______, _______, _______, _______, _______, _______, _______,
+       _______, _______, _______, _______, _______,
+                                                    _______, _______,
+                                                             _______,
+                              GUI_T(KC_BSPC), CTL_T(KC_DEL), _______,
+        // right hand
+       _______, _______, _______, _______, _______, _______, _______,
+       _______, _______, _______, _______, _______, _______, _______,
+                _______, _______, _______, _______, _______, _______,
+       _______, _______, _______, _______, _______, _______, _______,
+                         _______, _______, _______, _______, _______,
        _______, _______,
        _______,
-       _______, KC_WBAK, KC_WFWD
-),
+       _______, CTL_T(KC_ENT), GUI_T(KC_SPC)
+    ),
 };
 
-const uint16_t PROGMEM fn_actions[] = {};
+const uint16_t PROGMEM fn_actions[] = {
+    [0] = ACTION_FUNCTION(0),
+};
 
-const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
-{
+/* custom action function */
+void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
+  switch(id) {
+    case 0:
+        if(record->event.pressed) {
+            swap_gui_ctrl = !swap_gui_ctrl;
+            eeprom_update_byte(EECONFIG_BELAK_SWAP_GUI_CTRL, swap_gui_ctrl);
+
+            if (swap_gui_ctrl) {
+                layer_on(SWPH);
+            } else {
+                layer_off(SWPH);
+            }
+        }
+      break;
+  }
+}
+
+const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt) {
   // MACRODOWN only works in this function
       switch(id) {
         case 0:
@@ -196,7 +214,16 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
+    // If our magic word wasn't set properly, we need to zero out the settings.
+    if (eeprom_read_word(EECONFIG_BELAK) != EECONFIG_BELAK_MAGIC) {
+        eeprom_update_word(EECONFIG_BELAK, EECONFIG_BELAK_MAGIC);
+        eeprom_update_byte(EECONFIG_BELAK_SWAP_GUI_CTRL, 0);
+    }
 
+    if (eeprom_read_byte(EECONFIG_BELAK_SWAP_GUI_CTRL)) {
+        layer_on(SWPH);
+        swap_gui_ctrl = 1;
+    }
 };
 
 // Runs constantly in the background, in a loop.
