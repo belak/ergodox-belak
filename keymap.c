@@ -23,10 +23,14 @@
 
 static uint8_t swap_gui_ctrl = 0;
 
-#define BASE 0  // default layer
-#define SYMB 1  // symbols
-#define NUMP 2  // numpad
-#define SWPH 31 // swap gui/ctrl on the hands
+enum belak_keycodes {
+  BEL_F0 = SAFE_RANGE,
+};
+
+#define BASE 0 // default layer
+#define SYMB 1 // symbols
+#define NUMP 2 // numpad
+#define SWPH 3 // swap gui/ctrl on the hands
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Keymap 0: Basic layer
@@ -106,7 +110,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        _______, KC_UP,   _______, KC_UP,   _______, _______, KC_F12,
                 KC_DOWN, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
        _______, KC_AMPR, _______, _______, _______, _______, _______,
-                         _______, _______, _______, _______, F(0),
+                         _______, _______, _______, _______, BEL_F0,
        _______, _______,
        _______,
        _______, _______, _______
@@ -176,42 +180,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 };
 
-const uint16_t PROGMEM fn_actions[] = {
-    [0] = ACTION_FUNCTION(0),
-};
-
-/* custom action function */
-void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
-  switch(id) {
-    case 0:
-        if(record->event.pressed) {
-            swap_gui_ctrl = !swap_gui_ctrl;
-            eeprom_update_byte(EECONFIG_BELAK_SWAP_GUI_CTRL, swap_gui_ctrl);
-
-            if (swap_gui_ctrl) {
-                layer_on(SWPH);
-            } else {
-                layer_off(SWPH);
-            }
-        }
-      break;
-  }
-}
-
-const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt) {
-  // MACRODOWN only works in this function
-      switch(id) {
-        case 0:
-        if (record->event.pressed) {
-          register_code(KC_RSFT);
-        } else {
-          unregister_code(KC_RSFT);
-        }
-        break;
-      }
-    return MACRO_NONE;
-};
-
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
     // If our magic word wasn't set properly, we need to zero out the settings.
@@ -236,10 +204,27 @@ void matrix_scan_user(void) {
     // Layer 1 and 2 are both overlay layers, so they could both be on. This
     // means we can't use the lazy check of checking for the first significant
     // bit.
-    if (LAYER_ON(1)) {
+    if (LAYER_ON(SYMB)) {
         ergodox_right_led_1_on();
     }
-    if (LAYER_ON(2)) {
+    if (LAYER_ON(NUMP)) {
         ergodox_right_led_2_on();
     }
 };
+
+bool process_record_user (uint16_t keycode, keyrecord_t *record) {
+    if (keycode == BEL_F0 && record->event.pressed) {
+        swap_gui_ctrl = !swap_gui_ctrl;
+        eeprom_update_byte(EECONFIG_BELAK_SWAP_GUI_CTRL, swap_gui_ctrl);
+
+        if (swap_gui_ctrl) {
+            layer_on(SWPH);
+        } else {
+            layer_off(SWPH);
+        }
+
+        return false;
+    }
+
+    return true;
+}
