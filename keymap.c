@@ -4,7 +4,6 @@
 #include "eeconfig.h"
 
 #define LAYER_ON(pos) ((layer_state) & (1<<(pos)))
-
 #define _______ KC_TRNS
 
 #define EECONFIG_BELAK_MAGIC (uint16_t)0xBE42
@@ -24,13 +23,25 @@
 static uint8_t swap_gui_ctrl = 0;
 
 enum belak_keycodes {
+  // Function codes
   BEL_F0 = SAFE_RANGE,
 };
+
+// TODO: Add LED support to the tap dance by using the advanced macro
+#define LTOGGLE TD(TD_LAYER_TOGGLE)
 
 #define BASE 0 // default layer
 #define SYMB 1 // symbols
 #define NUMP 2 // numpad
 #define SWPH 3 // swap gui/ctrl on the hands
+
+enum belak_td {
+    TD_LAYER_TOGGLE = 0,
+};
+
+qk_tap_dance_action_t tap_dance_actions[] = {
+  [TD_LAYER_TOGGLE] = ACTION_TAP_DANCE_DOUBLE(TG(SYMB), TG(NUMP)),
+};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Keymap 0: Basic layer
@@ -60,7 +71,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,         KC_Q,         KC_W,   KC_E,   KC_R,   KC_T,   KC_LBRC,
         CTL_T(KC_BSLS), KC_A,         KC_S,   KC_D,   KC_F,   KC_G,
         KC_LSFT,        KC_Z,         KC_X,   KC_C,   KC_V,   KC_B,   KC_LGUI,
-        MO(SYMB),       KC_LCTRL,     KC_LEFT,KC_RGHT,KC_LALT,
+        LTOGGLE,        KC_LCTRL,     KC_LEFT,KC_RGHT,KC_LALT,
                                                      MO(NUMP),KC_INS,
                                                               KC_HOME,
                                  CTL_T(KC_BSPC),GUI_T(KC_DEL),KC_END,
@@ -69,7 +80,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
              KC_RBRC,     KC_Y,   KC_U,   KC_I,   KC_O,   KC_P,             KC_MINS,
                           KC_H,   KC_J,   KC_K,   KC_L,   KC_SCLN,          KC_QUOT,
              KC_RGUI,     KC_N,   KC_M,   KC_COMM,KC_DOT, KC_SLSH,          KC_RSFT,
-                                  KC_RALT,KC_UP,  KC_DOWN,KC_RCTRL,         MO(NUMP),
+                                  KC_RALT,KC_UP,  KC_DOWN,KC_RCTRL,         LTOGGLE,
              KC_GRV,      MO(SYMB),
              KC_PGUP,
              KC_PGDN,     GUI_T(KC_ENT), CTL_T(KC_SPC)
