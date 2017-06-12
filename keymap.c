@@ -11,20 +11,20 @@
 // NOTE: This is just a number that's a bit beyond the end of what's already
 // defined. As there is no other define we can base this on, it may need to be
 // changed in the future. The initial value here is used as a placeholder with a
-// magic word, similar to the normal eeconfig.
-#define EECONFIG_BELAK               (uint16_t *)32
+// magic word, similar to the normal eeconfig. Note that all the storage being
+// used needs to fit inside the 32 bytes of the Ergodox Infinity.
+#define EECONFIG_BELAK (uint16_t *)16
 
-// It's worth noting that I'm really lazy. The correct way to do this would be
-// how the normal eeconfig handles it and use a bitfield. However, the eeprom
-// has a ton of space which isn't being used so I don't really care and have a
-// separate byte for every setting.
+// The correct way to do this would be how the normal eeconfig handles it and
+// use a bitfield. However, the eeprom has a ton of space which isn't being
+// used so I don't really care and have a separate byte for every setting.
 #define EECONFIG_BELAK_SWAP_GUI_CTRL (uint8_t *)34
 
 static uint8_t swap_gui_ctrl = 0;
 
 enum belak_keycodes {
-  // Function codes
-  BEL_F0 = SAFE_RANGE,
+    // Function codes
+    BEL_F0 = SAFE_RANGE,
 };
 
 // TODO: Add LED support to the tap dance by using the advanced macro
@@ -40,7 +40,7 @@ enum belak_td {
 };
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-  [TD_LAYER_TOGGLE] = ACTION_TAP_DANCE_DOUBLE(TG(SYMB), TG(NUMP)),
+    [TD_LAYER_TOGGLE] = ACTION_TAP_DANCE_DOUBLE(TG(SYMB), TG(NUMP)),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -65,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                                |       |      | End  |       | PgDn |       |       |
  *                                `---------------------'       `----------------------'
  */
-[BASE] = KEYMAP(  // layer 0 : default
+    [BASE] = KEYMAP(  // layer 0 : default
         // left hand
         KC_ESC,         KC_1,         KC_2,   KC_3,   KC_4,   KC_5,   TG(SYMB),
         KC_TAB,         KC_Q,         KC_W,   KC_E,   KC_R,   KC_T,   KC_LBRC,
@@ -76,14 +76,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                               KC_HOME,
                                  CTL_T(KC_BSPC),GUI_T(KC_DEL),KC_END,
         // right hand
-             TG(NUMP),    KC_6,   KC_7,   KC_8,   KC_9,   KC_0,             KC_EQL,
-             KC_RBRC,     KC_Y,   KC_U,   KC_I,   KC_O,   KC_P,             KC_MINS,
-                          KC_H,   KC_J,   KC_K,   KC_L,   KC_SCLN,          KC_QUOT,
-             KC_RGUI,     KC_N,   KC_M,   KC_COMM,KC_DOT, KC_SLSH,          KC_RSFT,
-                                  KC_RALT,KC_UP,  KC_DOWN,KC_RCTRL,         LTOGGLE,
-             KC_GRV,      MO(SYMB),
-             KC_PGUP,
-             KC_PGDN,     GUI_T(KC_ENT), CTL_T(KC_SPC)
+        TG(NUMP),    KC_6,   KC_7,   KC_8,   KC_9,   KC_0,             KC_EQL,
+        KC_RBRC,     KC_Y,   KC_U,   KC_I,   KC_O,   KC_P,             KC_MINS,
+                     KC_H,   KC_J,   KC_K,   KC_L,   KC_SCLN,          KC_QUOT,
+        KC_RGUI,     KC_N,   KC_M,   KC_COMM,KC_DOT, KC_SLSH,          KC_RSFT,
+                             KC_RALT,KC_UP,  KC_DOWN,KC_RCTRL,         LTOGGLE,
+        KC_GRV,      MO(SYMB),
+        KC_PGUP,
+        KC_PGDN,     GUI_T(KC_ENT), CTL_T(KC_SPC)
     ),
 /* Keymap 1: Symbol Layer
  *
@@ -106,26 +106,26 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                                 |      |      |      |       |      |      |      |
  *                                 `--------------------'       `--------------------'
  */
-[SYMB] = KEYMAP(
-       // left hand
-       _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   _______,
-       _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE, _______,
-       _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,
-       _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD, _______,
-       _______, _______, _______, _______, _______,
-                                                    _______, _______,
-                                                             _______,
-                                           _______, _______, _______,
-       // right hand
-       _______, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
-       _______, KC_UP,   _______, KC_UP,   _______, _______, KC_F12,
-                KC_DOWN, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
-       _______, KC_AMPR, _______, _______, _______, _______, _______,
-                         _______, _______, _______, _______, BEL_F0,
-       _______, _______,
-       _______,
-       _______, _______, _______
-),
+    [SYMB] = KEYMAP(
+        // left hand
+        _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   _______,
+        _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE, _______,
+        _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,
+        _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD, _______,
+        _______, _______, _______, _______, _______,
+                                                     _______, _______,
+                                                              _______,
+                                            _______, _______, _______,
+        // right hand
+        _______, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
+        _______, KC_UP,   _______, KC_UP,   _______, _______, KC_F12,
+                 KC_DOWN, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
+        _______, KC_AMPR, _______, _______, _______, _______, _______,
+                          _______, _______, _______, _______, BEL_F0,
+        _______, _______,
+        _______,
+        _______, _______, _______
+    ),
 /* Keymap 2: Numpad Layer
  *
  * ,--------------------------------------------------.           ,--------------------------------------------------.
@@ -147,47 +147,46 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                                 |      |      |      |       |      |      |      |
  *                                 `--------------------'       `--------------------'
  */
-[NUMP] = KEYMAP(
-       // left hand
-       _______, _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, _______, _______,
-                                                    _______, _______,
-                                                             _______,
-                                           _______, _______, _______,
-       // right hand
-       _______, _______, _______, _______, _______, _______, _______,
-       _______, _______, KC_7,    KC_8,    KC_9,    KC_ASTR, _______,
-                _______, KC_4,    KC_5,    KC_6,    KC_PLUS, _______,
-       _______, _______, KC_1,    KC_2,    KC_3,    KC_BSLS, _______,
-                         KC_0,    KC_0,    KC_DOT,  KC_EQL,  _______,
-       _______, _______,
-       _______,
-       _______, _______, _______
-),
-/* Keymap 31: Swap control and gui on the thumb
- */
-[SWPH] = KEYMAP(  // layer 0 : default
+    [NUMP] = KEYMAP(
         // left hand
-       _______, _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, _______, _______,
-                                                    _______, _______,
-                                                             _______,
-                              GUI_T(KC_BSPC), CTL_T(KC_DEL), _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______,
+                                                     _______, _______,
+                                                              _______,
+                                            _______, _______, _______,
         // right hand
-       _______, _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, _______, _______, _______, _______,
-                _______, _______, _______, _______, _______, _______,
-       _______, _______, _______, _______, _______, _______, _______,
-                         _______, _______, _______, _______, _______,
-       _______, _______,
-       _______,
-       _______, CTL_T(KC_ENT), GUI_T(KC_SPC)
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, KC_7,    KC_8,    KC_9,    KC_ASTR, _______,
+                 _______, KC_4,    KC_5,    KC_6,    KC_PLUS, _______,
+        _______, _______, KC_1,    KC_2,    KC_3,    KC_BSLS, _______,
+                          KC_0,    KC_0,    KC_DOT,  KC_EQL,  _______,
+        _______, _______,
+        _______,
+        _______, _______, _______
+    ),
+/* Keymap 31: Swap control and gui on the thumb */
+    [SWPH] = KEYMAP(
+        // left hand
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______,
+                                                     _______, _______,
+                                                              _______,
+                               GUI_T(KC_BSPC), CTL_T(KC_DEL), _______,
+        // right hand
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+                 _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+                          _______, _______, _______, _______, _______,
+        _______, _______,
+        _______,
+        _______, CTL_T(KC_ENT), GUI_T(KC_SPC)
     ),
 };
 
