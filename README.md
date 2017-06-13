@@ -16,6 +16,7 @@ and tweaked it a bit based on the keycaps I have.
 Fifth Revision
 
 * Change layer keys to tap-dance keys which cycle through additional layers
+* Add a few emoji keys (in preparation for an emoji layer)
 
 Fourth Revision
 

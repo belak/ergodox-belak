@@ -27,6 +27,15 @@ enum belak_keycodes {
     // Function codes
     BEL_F0 = SAFE_RANGE,
     BEL_F1,
+
+    E_SHRUG,
+    E_TFLIP,
+    E_TSET,
+};
+
+inline void tap(uint16_t keycode) {
+    register_code(keycode);
+    unregister_code(keycode);
 };
 
 // TODO: Add LED support to the tap dance by using the advanced macro
@@ -97,10 +106,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |        |  F1  |  F2  |  F3  |  F4  |  F5  |      |           |      |  F6  |  F7  |  F8  |  F9  |  F10 |   F11  |
  * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
  * |        |   !  |   @  |   {  |   }  |   |  |      |           |      |   Up |      |  Up  |      |      |   F12  |
- * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
+ * |--------+------+------+------+------+------| TFLIP|           | TSET |------+------+------+------+------+--------|
  * |        |   #  |   $  |   (  |   )  |   `  |------|           |------| Down | Left | Down | Rght |      |        |
  * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
- * |        |   %  |   ^  |   [  |   ]  |   ~  |      |           |      |   &  |      |      |      |      |        |
+ * |        |   %  |   ^  |   [  |   ]  |   ~  | SHRUG|           |      |   &  |      |      |      |      |        |
  * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
  *   |LClear|      |      |      |      |                                       |      |      |      |      |LClear|
  *   `----------------------------------'                                       `----------------------------------'
@@ -114,10 +123,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [SYMB] = KEYMAP(
         // left hand
-        _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   _______,
-        _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE, _______,
+        _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   E_TFLIP,
+        _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE, E_TSET,
         _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,
-        _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD, _______,
+        _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD, E_SHRUG,
         BEL_F1,  _______, _______, _______, _______,
                                                      BEL_F0,  _______,
                                                               _______,
@@ -173,7 +182,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,
         _______, _______, _______
     ),
-/* Keymap 31: Swap control and gui on the thumb */
+/* Keymap 3: Swap control and gui on the thumb */
     [SWPH] = KEYMAP(
         // left hand
         _______, _______, _______, _______, _______, _______, _______,
@@ -238,22 +247,91 @@ void matrix_scan_user(void) {
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (keycode == BEL_F0 && record->event.pressed) {
-        swap_gui_ctrl = !swap_gui_ctrl;
-        eeprom_update_byte(EECONFIG_BELAK_SWAP_GUI_CTRL, swap_gui_ctrl);
+    switch (keycode) {
+    case BEL_F0:
+        if(record->event.pressed){
+            swap_gui_ctrl = !swap_gui_ctrl;
+            eeprom_update_byte(EECONFIG_BELAK_SWAP_GUI_CTRL, swap_gui_ctrl);
 
-        if (swap_gui_ctrl) {
-            layer_on(SWPH);
-        } else {
-            layer_off(SWPH);
+            if (swap_gui_ctrl) {
+                layer_on(SWPH);
+            } else {
+                layer_off(SWPH);
+            }
+
+            return false;
         }
+        break;
+    case BEL_F1:
+        if(record->event.pressed){
+            layer_off(SYMB);
+            layer_off(NUMP);
 
+            return false;
+        }
+        break;
+    case E_SHRUG: // ¯\_(ツ)_/¯
+        if (record->event.pressed) {
+            process_unicode((0x00AF|QK_UNICODE), record);   // Hand
+            tap(KC_BSLS);                                   // Arm
+            register_code(KC_RSFT);
+            tap(KC_UNDS);                                   // Arm
+            tap(KC_LPRN);                                   // Head
+            unregister_code(KC_RSFT);
+            process_unicode((0x30C4|QK_UNICODE), record);   // Face
+            register_code(KC_RSFT);
+            tap(KC_RPRN);                                   // Head
+            tap(KC_UNDS);                                   // Arm
+            unregister_code(KC_RSFT);
+            tap(KC_SLSH);                                   // Arm
+            process_unicode((0x00AF|QK_UNICODE), record);   // Hand
+        }
         return false;
-    } else if (keycode == BEL_F1 && record->event.pressed) {
-        layer_off(SYMB);
-        layer_off(NUMP);
-
+        break;
+    case E_TFLIP: // (╯°□°)╯ ︵ ┻━┻
+        if (record->event.pressed) {
+            register_code(KC_RSFT);
+            tap(KC_9);
+            unregister_code(KC_RSFT);
+            process_unicode((0x256F|QK_UNICODE), record);   // Arm
+            process_unicode((0x00B0|QK_UNICODE), record);   // Eye
+            process_unicode((0x25A1|QK_UNICODE), record);   // Mouth
+            process_unicode((0x00B0|QK_UNICODE), record);   // Eye
+            register_code(KC_RSFT);
+            tap(KC_0);
+            unregister_code(KC_RSFT);
+            process_unicode((0x256F|QK_UNICODE), record);   // Arm
+            tap(KC_SPC);
+            process_unicode((0x0361|QK_UNICODE), record);   // Flippy
+            tap(KC_SPC);
+            process_unicode((0x253B|QK_UNICODE), record);   // Table
+            process_unicode((0x2501|QK_UNICODE), record);   // Table
+            process_unicode((0x253B|QK_UNICODE), record);   // Table
+        }
         return false;
+        break;
+    case E_TSET: // ┬──┬ ノ( ゜-゜ノ)
+        if (record->event.pressed) {
+            process_unicode((0x252C|QK_UNICODE), record);   // Table
+            process_unicode((0x2500|QK_UNICODE), record);   // Table
+            process_unicode((0x2500|QK_UNICODE), record);   // Table
+            process_unicode((0x252C|QK_UNICODE), record);   // Table
+            tap(KC_SPC);
+            process_unicode((0x30CE|QK_UNICODE), record);   // Arm
+            register_code(KC_RSFT);
+            tap(KC_9);
+            unregister_code(KC_RSFT);
+            tap(KC_SPC);
+            process_unicode((0x309C|QK_UNICODE), record);   // Eye
+            tap(KC_MINS);
+            process_unicode((0x309C|QK_UNICODE), record);   // Eye
+            process_unicode((0x30CE|QK_UNICODE), record);   // Arm
+            register_code(KC_RSFT);
+            tap(KC_0);
+            unregister_code(KC_RSFT);
+        }
+        return false;
+        break;
     }
 
     return true;
