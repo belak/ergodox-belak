@@ -18,13 +18,15 @@
 // The correct way to do this would be how the normal eeconfig handles it and
 // use a bitfield. However, the eeprom has a ton of space which isn't being
 // used so I don't really care and have a separate byte for every setting.
-#define EECONFIG_BELAK_SWAP_GUI_CTRL (uint8_t *)34
+#define EECONFIG_BELAK_SWAP_GUI_CTRL (uint8_t *)18
 
 static uint8_t swap_gui_ctrl = 0;
+static uint8_t td_led_override = 0;
 
 enum belak_keycodes {
     // Function codes
     BEL_F0 = SAFE_RANGE,
+    BEL_F1,
 };
 
 // TODO: Add LED support to the tap dance by using the advanced macro
@@ -39,8 +41,12 @@ enum belak_td {
     TD_LAYER_TOGGLE = 0,
 };
 
+void belak_td_each(qk_tap_dance_state_t *state, void *user_data);
+void belak_td_finished(qk_tap_dance_state_t *state, void *user_data);
+void belak_td_reset(qk_tap_dance_state_t *state, void *user_data);
+
 qk_tap_dance_action_t tap_dance_actions[] = {
-    [TD_LAYER_TOGGLE] = ACTION_TAP_DANCE_DOUBLE(TG(SYMB), TG(NUMP)),
+    [TD_LAYER_TOGGLE] = ACTION_TAP_DANCE_FN_ADVANCED(belak_td_each, belak_td_finished, belak_td_reset),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -55,7 +61,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------| LGui |           | RGui |------+------+------+------+------+--------|
  * | LShift |   Z  |   X  |   C  |   V  |   B  |      |           |      |   N  |   M  |   ,  |   .  |   /  | RShift |
  * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   | ~L1  | LCtrl| Left | Right| LAlt |                                       | RAlt | Up   | Down | RCtrl|  ~L2 |
+ *   |Layers| LCtrl| Left | Right| LAlt |                                       | RAlt | Up   | Down | RCtrl|Layers|
  *   `----------------------------------'                                       `----------------------------------'
  *                                        ,-------------.       ,--------------.
  *                                        |  ~L2 | Ins  |       | Grv  | ~L1   |
@@ -96,10 +102,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
  * |        |   %  |   ^  |   [  |   ]  |   ~  |      |           |      |   &  |      |      |      |      |        |
  * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   |      |      |      |      |      |                                       |      |      |      |      | TOGL |
+ *   |LClear|      |      |      |      |                                       |      |      |      |      |LClear|
  *   `----------------------------------'                                       `----------------------------------'
  *                                        ,-------------.       ,-------------.
- *                                        |      |      |       |      |      |
+ *                                        | TOGL |      |       |      | TOGL |
  *                                 ,------|------|------|       |------+------+------.
  *                                 |      |      |      |       |      |      |      |
  *                                 |      |      |------|       |------|      |      |
@@ -112,8 +118,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE, _______,
         _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,
         _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD, _______,
-        _______, _______, _______, _______, _______,
-                                                     _______, _______,
+        BEL_F1,  _______, _______, _______, _______,
+                                                     BEL_F0,  _______,
                                                               _______,
                                             _______, _______, _______,
         // right hand
@@ -121,8 +127,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, KC_UP,   _______, KC_UP,   _______, _______, KC_F12,
                  KC_DOWN, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
         _______, KC_AMPR, _______, _______, _______, _______, _______,
-                          _______, _______, _______, _______, BEL_F0,
-        _______, _______,
+                          _______, _______, _______, _______, BEL_F1,
+        _______, BEL_F0,
         _______,
         _______, _______, _______
     ),
@@ -137,10 +143,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
  * |        |      |      |      |      |      |      |           |      |      |   1  |   2  |   3  |   \  |        |
  * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   |      |      |      |      |      |                                       |   0  |    0 |   .  |   =  |      |
+ *   |LClear|      |      |      |      |                                       |   0  |    0 |   .  |   =  |LClear|
  *   `----------------------------------'                                       `----------------------------------'
  *                                        ,-------------.       ,-------------.
- *                                        |      |      |       |      |      |
+ *                                        | TOGL |      |       |      | TOGL |
  *                                 ,------|------|------|       |------+------+------.
  *                                 |      |      |      |       |      |      |      |
  *                                 |      |      |------|       |------|      |      |
@@ -153,8 +159,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______,
-                                                     _______, _______,
+        BEL_F1,  _______, _______, _______, _______,
+                                                     BEL_F0,  _______,
                                                               _______,
                                             _______, _______, _______,
         // right hand
@@ -162,8 +168,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, KC_7,    KC_8,    KC_9,    KC_ASTR, _______,
                  _______, KC_4,    KC_5,    KC_6,    KC_PLUS, _______,
         _______, _______, KC_1,    KC_2,    KC_3,    KC_BSLS, _______,
-                          KC_0,    KC_0,    KC_DOT,  KC_EQL,  _______,
-        _______, _______,
+                          KC_0,    KC_0,    KC_DOT,  KC_EQL,  BEL_F1,
+        _______, BEL_F0,
         _______,
         _______, _______, _______
     ),
@@ -211,18 +217,27 @@ void matrix_scan_user(void) {
     ergodox_right_led_2_off();
     ergodox_right_led_3_off();
 
-    // Layer 1 and 2 are both overlay layers, so they could both be on. This
-    // means we can't use the lazy check of checking for the first significant
-    // bit.
-    if (LAYER_ON(SYMB)) {
+    switch (td_led_override) {
+    case 1:
         ergodox_right_led_1_on();
-    }
-    if (LAYER_ON(NUMP)) {
+        break;
+    case 2:
         ergodox_right_led_2_on();
+        break;
+    default:
+        // Layer 1 and 2 are both overlay layers, so they could both be on. This
+        // means we can't use the lazy check of checking for the first significant
+        // bit.
+        if (LAYER_ON(SYMB)) {
+            ergodox_right_led_1_on();
+        }
+        if (LAYER_ON(NUMP)) {
+            ergodox_right_led_2_on();
+        }
     }
 };
 
-bool process_record_user (uint16_t keycode, keyrecord_t *record) {
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (keycode == BEL_F0 && record->event.pressed) {
         swap_gui_ctrl = !swap_gui_ctrl;
         eeprom_update_byte(EECONFIG_BELAK_SWAP_GUI_CTRL, swap_gui_ctrl);
@@ -234,7 +249,41 @@ bool process_record_user (uint16_t keycode, keyrecord_t *record) {
         }
 
         return false;
+    } else if (keycode == BEL_F1 && record->event.pressed) {
+        layer_off(SYMB);
+        layer_off(NUMP);
+
+        return false;
     }
 
     return true;
+}
+
+void belak_td_each(qk_tap_dance_state_t *state, void *user_data) {
+    switch (state->count) {
+    case 1:
+        td_led_override = 1;
+        break;
+    case 2:
+        td_led_override = 2;
+        break;
+    default:
+        reset_tap_dance(state);
+    }
+}
+
+void belak_td_finished(qk_tap_dance_state_t *state, void *user_data) {
+    switch (state->count) {
+    case 1:
+        layer_on(SYMB);
+        break;
+    case 2:
+        layer_on(NUMP);
+        break;
+    }
+    td_led_override = 0;
+}
+
+void belak_td_reset(qk_tap_dance_state_t *state, void *user_data) {
+    td_led_override = 0;
 }

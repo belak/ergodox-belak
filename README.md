@@ -13,6 +13,10 @@ and tweaked it a bit based on the keycaps I have.
 
 ## Changelog
 
+Fifth Revision
+
+* Change layer keys to tap-dance keys which cycle through additional layers
+
 Fourth Revision
 
 * Remove media layer
