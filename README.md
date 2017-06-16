@@ -5,11 +5,26 @@ from the main qmk repo. However, I've taken some of the ideas for the thumbs
 from [dvorak\_emacs](https://github.com/jackhumbert/qmk_firmware/tree/master/keyboards/ergodox/keymaps/dvorak_emacs)
 and tweaked it a bit based on the keycaps I have.
 
+This keyboard is intended for use in emacs (one of the main reasons for easy
+access to modifiers) but it could be useful in other instances as well.
+
+The main repo is used as a testbed, so sometimes the layout may be in a strange
+state. The qmk version should be relatively stable.
+
 ## Instructions
 
+This is currently being used on a regular ergodox, but it should work fine on
+the infinity as well. Though, you may have to modify the commands to build and
+flash the firmware to match the separate halves as defined in the infinity
+documentation.
+
+If you are using this keymap in the qmk repo, you should be able to just run
+`make ergodox-belak-teensy`. If you're using this externally (I sometimes make
+changes before syncing them to qmk), use the following instructions:
+
 1. Clone the main qmk repo
-2. Clone this to `$QMK/keyboards/ergodox/keymaps/belak`
-3. Run `make ergodox-belak-teensy`
+2. Clone this to `$QMK/keyboards/ergodox/keymaps/belak-external`
+3. Run `make ergodox-belak-external-teensy` from the root of the qmk repo.
 
 ## Changelog
 
@@ -57,3 +72,8 @@ Initial Version
 * Remove LCtrl and RCtrl from the keys above shift
 * Add browser forward, and move browser back
 * "Fix" the order of volume keys
+
+## Repository
+
+The original code for this is kept at https://github.com/belak/ergodox-layout and
+is synced to qmk every few main revisions.
