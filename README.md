@@ -28,6 +28,13 @@ changes before syncing them to qmk), use the following instructions:
 
 ## Changelog
 
+Sixth Revision
+
+* Remove emoji keys as they don't work well in OSX, even when in the proper
+  input mode.
+* Change the visualizer to improve display when using the tap-dance layer
+  switch.
+
 Fifth Revision
 
 * Change layer keys to tap-dance keys which cycle through additional layers
